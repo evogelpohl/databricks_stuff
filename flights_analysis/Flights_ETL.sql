@@ -6,15 +6,13 @@
 -- COMMAND ----------
 
 -- Ensure the unity catalog is created for 'workshop'
-CREATE CATALOG IF NOT EXISTS workshop;
-  USE CATALOG workshop;
+CREATE CATALOG IF NOT EXISTS demos;
+  USE CATALOG demos;
   
 -- Ensure the schema/database for is created
 CREATE SCHEMA IF NOT EXISTS data;
   USE SCHEMA data;
   
--- DROP TABLE for testing only
---DROP TABLE IF EXISTS flights_raw;
 
 -- COMMAND ----------
 
