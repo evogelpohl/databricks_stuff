@@ -1,5 +1,21 @@
 -- Databricks notebook source
 -- MAGIC %md
+-- MAGIC ## Set the storage account variable from a KV secret
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC dbx_kv_scope = 'dbx_kv_scope_01'
+-- MAGIC stg_kv_name = 'clientdemo-stg-account-base-abfss-path'
+-- MAGIC stg_base_uri = dbutils.secrets.get(scope=dbx_kv_scope, key=stg_kv_name)
+-- MAGIC
+-- MAGIC # Set the Python variable as a Spark configuration property
+-- MAGIC spark.conf.set("spark.databricks.stgBaseUri", stg_base_uri)
+-- MAGIC
+
+-- COMMAND ----------
+
+-- MAGIC %md
 -- MAGIC
 -- MAGIC ## Copy Flights into Table
 
@@ -10,9 +26,11 @@ CREATE CATALOG IF NOT EXISTS demos;
   USE CATALOG demos;
   
 -- Ensure the schema/database for is created
-CREATE SCHEMA IF NOT EXISTS data;
-  USE SCHEMA data;
-  
+CREATE SCHEMA IF NOT EXISTS flights;
+  USE SCHEMA flights;
+
+--DROP TABLE IF EXISTS flights_raw;
+
 
 -- COMMAND ----------
 
@@ -74,14 +92,14 @@ COPY INTO flights_raw
         DOUBLE(WeatherDelay),
         DOUBLE(NASDelay),
         DOUBLE(SecurityDelay)
-      FROM 'abfss://data@bpworkshopstg.dfs.core.windows.net/raw_data/flights_data/'
+      FROM '${spark.databricks.stgBaseUri}/flights_data/flights'
       )
   FILEFORMAT = CSV
   FORMAT_OPTIONS ('mergeSchema' = 'true',
                   'header' = 'true')
   COPY_OPTIONS ('mergeSchema' = 'true');
   
---SELECT count(*) FROM flights_raw;
+SELECT count(*) FROM flights_raw;
 
 -- COMMAND ----------
 
@@ -91,22 +109,22 @@ COPY INTO flights_raw
 
 -- COMMAND ----------
 
--- Create the Airline table
+-- -- Create the Airline table
 
 CREATE OR REPLACE TEMPORARY VIEW airline_load_temp
   USING csv
-  OPTIONS (path 'abfss://data@bpworkshopstg.dfs.core.windows.net/raw_data/flights_data_dim_tables/airlines/L_AIRLINE_ID.csv',
+  OPTIONS (path '${spark.databricks.stgBaseUri}/flights_data/dims/carriers.csv',
     header 'true');
 
 CREATE OR REPLACE TABLE flights_airline_raw AS (
   SELECT * FROM airline_load_temp);
 
---SELECT * FROM flights_airline;
+-- --SELECT * FROM flights_airline;
 
 -- Create the Airports table
 CREATE OR REPLACE TEMPORARY VIEW airport_load_temp
   USING csv
-  OPTIONS (path 'abfss://data@bpworkshopstg.dfs.core.windows.net/raw_data/flights_data_dim_tables/airports/L_AIRPORT_ID.csv',
+  OPTIONS (path '${spark.databricks.stgBaseUri}/flights_data/dims/airports.csv',
     header 'true');
 
 CREATE OR REPLACE TABLE flights_airport_raw AS (
@@ -140,21 +158,21 @@ PARTITIONED BY (Year)
 AS 
 SELECT
  Fl.FlightDate, 
- Fl.Year,
+ YEAR(FL.FlightDate) as Year,
  Fl.OriginCityName, 
  Fl.OriginState, 
  Fl.DestCityName, 
  Fl.DestState, 
  Fl.ArrDelayMinutes, 
  Fl.DepDelayMinutes,
- SPLIT_PART(Al.Description, ":", 1) as Airline
+ SPLIT_PART(Al.Carrier, ":", 1) as Airline
 FROM
- workshop.data.flights_raw fl
-   LEFT JOIN workshop.data.flights_airline_raw Al ON fl.DOT_ID_Reporting_Airline = Al.Code;
+ flights_raw fl
+   LEFT JOIN flights_airline_raw Al ON fl.DOT_ID_Reporting_Airline = Al.ID;
 
 
 -- COMMAND ----------
 
-OPTIMIZE workshop.data.flights_on_time_perf_clean ZORDER BY (Year);
+OPTIMIZE flights_on_time_perf_clean ZORDER BY (Airline);
 
-ANALYZE TABLE workshop.data.flights_on_time_perf_clean COMPUTE STATISTICS FOR ALL COLUMNS;
+--ANALYZE TABLE flights_on_time_perf_clean COMPUTE STATISTICS FOR ALL COLUMNS;
