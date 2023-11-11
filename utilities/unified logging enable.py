@@ -1,4 +1,10 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC
+# MAGIC # Enable the New Logging Schemas
+
+# COMMAND ----------
+
 import requests
 metastore_id = "" # get from the accounts portal. take from the metastore url or get it programmatically
 
@@ -20,7 +26,3 @@ for schema in schemas:
             print(f"Successfully enabled schema {schema_name}")
     except Exception as e:
         print(f"Exception while enabling schema {schema_name}: {str(e)}")
-
-# COMMAND ----------
-
-
