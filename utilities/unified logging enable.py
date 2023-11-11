@@ -1,6 +1,6 @@
 # Databricks notebook source
 import requests
-metastore_id = "783160d1-a726-4b8a-b6fc-1faef94e7352" # get from the accounts portal. take from the metastore url or get it programmatically
+metastore_id = "" # get from the accounts portal. take from the metastore url or get it programmatically
 
 host = "https://"+dbutils.notebook.entry_point.getDbutils().notebook().getContext().browserHostName().get()
 headers = {"Authorization": "Bearer "+dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()}

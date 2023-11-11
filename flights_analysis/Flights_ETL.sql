@@ -174,5 +174,3 @@ FROM
 -- COMMAND ----------
 
 OPTIMIZE flights_on_time_perf_clean ZORDER BY (Airline);
-
---ANALYZE TABLE flights_on_time_perf_clean COMPUTE STATISTICS FOR ALL COLUMNS;
