@@ -29,8 +29,10 @@ CREATE CATALOG IF NOT EXISTS demos;
 CREATE SCHEMA IF NOT EXISTS flights;
   USE SCHEMA flights;
 
---DROP TABLE IF EXISTS flights_raw;
-
+-- Set enterprise wide SELECT permissions to all tables in this schema
+GRANT use_catalog ON CATALOG demos TO `account users`;
+GRANT use_schema ON SCHEMA demos.flights TO `account users`;
+GRANT select ON SCHema demos.flights TO `account users`;
 
 -- COMMAND ----------
 
@@ -170,6 +172,13 @@ FROM
  flights_raw fl
    LEFT JOIN flights_airline_raw Al ON fl.DOT_ID_Reporting_Airline = Al.ID;
 
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC
+-- MAGIC
+-- MAGIC ## Optimize
 
 -- COMMAND ----------
 
