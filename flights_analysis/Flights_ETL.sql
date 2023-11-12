@@ -30,9 +30,9 @@ CREATE SCHEMA IF NOT EXISTS flights;
   USE SCHEMA flights;
 
 -- Set enterprise wide SELECT permissions to all tables in this schema
-GRANT use_catalog ON CATALOG demos TO `account users`;
-GRANT use_schema ON SCHEMA demos.flights TO `account users`;
-GRANT select ON SCHema demos.flights TO `account users`;
+GRANT USE_CATALOG ON CATALOG demos TO `account users`;
+GRANT USE_SCHEMA ON SCHEMA demos.flights TO `account users`;
+GRANT SELECT ON SCHEMA demos.flights TO `account users`;
 
 -- COMMAND ----------
 
