@@ -6,7 +6,7 @@
 # COMMAND ----------
 
 import requests
-metastore_id = "" # get from the accounts portal. take from the metastore url or get it programmatically
+metastore_id = "XXXXX" # get from the accounts portal. take from the metastore url or get it programmatically
 
 host = "https://"+dbutils.notebook.entry_point.getDbutils().notebook().getContext().browserHostName().get()
 headers = {"Authorization": "Bearer "+dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()}
@@ -26,3 +26,7 @@ for schema in schemas:
             print(f"Successfully enabled schema {schema_name}")
     except Exception as e:
         print(f"Exception while enabling schema {schema_name}: {str(e)}")
+
+# COMMAND ----------
+
+

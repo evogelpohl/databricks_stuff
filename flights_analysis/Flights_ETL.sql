@@ -17,7 +17,7 @@
 
 -- MAGIC %md
 -- MAGIC
--- MAGIC ## Copy Flights into Table
+-- MAGIC ## Copy Flights Data into Table (Extract from STorge & Load into a table)
 
 -- COMMAND ----------
 
