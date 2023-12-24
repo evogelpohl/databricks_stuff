@@ -17,7 +17,7 @@
 
 -- MAGIC %md
 -- MAGIC
--- MAGIC ## Copy Flights Data into Table (Extract from STorge & Load into a table)
+-- MAGIC ## Copy Flights Data into Table (Extract from Storage & Load into a table)
 
 -- COMMAND ----------
 
@@ -101,7 +101,7 @@ COPY INTO flights_raw
                   'header' = 'true')
   COPY_OPTIONS ('mergeSchema' = 'true');
   
-SELECT count(*) FROM flights_raw;
+--SELECT count(*) FROM flights_raw;
 
 -- COMMAND ----------
 
@@ -137,18 +137,6 @@ CREATE OR REPLACE TABLE flights_airport_raw AS (
 
 -- COMMAND ----------
 
--- MAGIC %md
--- MAGIC
--- MAGIC ## Optimize
-
--- COMMAND ----------
-
---OPTIMIZE flights_raw ZORDER BY Year;
-OPTIMIZE flights_airline_raw;
-OPTIMIZE flights_airport_raw;
-
--- COMMAND ----------
-
 -- MAGIC %md 
 -- MAGIC
 -- MAGIC ## Create Table for Analysis
@@ -170,8 +158,9 @@ SELECT
  SPLIT_PART(Al.Carrier, ":", 1) as Airline
 FROM
  flights_raw fl
-   LEFT JOIN flights_airline_raw Al ON fl.DOT_ID_Reporting_Airline = Al.ID;
+   LEFT JOIN flights_airline_raw Al ON fl.Reporting_Airline = Al.ID;
 
+--SELECT * FROM flights_on_time_perf_clean;
 
 -- COMMAND ----------
 
